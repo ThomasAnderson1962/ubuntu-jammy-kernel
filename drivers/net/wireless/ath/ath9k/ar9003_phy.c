@@ -152,9 +152,14 @@ static int ar9003_hw_set_channel(struct ath_hw *ah, struct ath9k_channel *chan)
 	u32 freq, chan_frac, div, channelSel = 0, reg32 = 0;
 	struct chan_centers centers;
 	int loadSynthChannel;
+	struct ath_common *ac = ath9k_hw_common(ah);
 
 	ath9k_hw_get_channel_centers(ah, chan, &centers);
-	freq = centers.synth_center;
+	if (0 == ac->freq_override) {
+		freq = centers.synth_center;
+	} else {
+		freq = ac->freq_override;
+	}
 
 	if (freq < 4800) {     /* 2 GHz, fractional mode */
 		if (AR_SREV_9330(ah) || AR_SREV_9485(ah) ||

@@ -29,6 +29,7 @@
 #include "ar9003_mci.h"
 #include "ar9003_phy.h"
 #include "ath9k.h"
+#include "../regd_common.h"
 
 static bool ath9k_hw_set_reset_reg(struct ath_hw *ah, u32 type);
 
@@ -2491,7 +2492,7 @@ int ath9k_hw_fill_cap_info(struct ath_hw *ah)
 	u8 ant_div_ctl1, tx_chainmask, rx_chainmask;
 
 	eeval = ah->eep_ops->get_eeprom(ah, EEP_REG_0);
-	regulatory->current_rd = eeval;
+	regulatory->current_rd = WORA_WORLD; // pretend you're always in the World A region
 
 	if (ah->opmode != NL80211_IFTYPE_AP &&
 	    ah->hw_version.subvendorid == AR_SUBVENDOR_ID_NEW_A) {

@@ -741,7 +741,21 @@ ieee80211_tx_h_rate_ctrl(struct ieee80211_tx_data *tx)
 	 * If we're associated with the sta at this point we know we can at
 	 * least send the frame at the lowest bit rate.
 	 */
-	rate_control_get_rate(tx->sdata, tx->sta, &txrc);
+
+	/*
+	Strict mode patch:
+	 * set the slowest suitable data rate
+	 * disable RTS/CTS
+	*/
+	if (tx->sdata->local->tx_strict_mode) {
+		rate_control_get_slow_rate(tx->sdata, tx->sta, &txrc);
+		txrc.rts = false;
+		info->control.use_rts = false;
+		info->control.use_cts_prot = false;
+	} else {
+		// usual flow
+		rate_control_get_rate(tx->sdata, tx->sta, &txrc);
+	}
 
 	if (tx->sta && !info->control.skip_table)
 		ratetbl = rcu_dereference(tx->sta->sta.rates);
@@ -781,6 +795,12 @@ ieee80211_tx_h_rate_ctrl(struct ieee80211_tx_data *tx)
 	if (WARN_ON_ONCE((info->control.rates[0].count > 1) &&
 			 (info->flags & IEEE80211_TX_CTL_NO_ACK)))
 		info->control.rates[0].count = 1;
+
+	if (tx->sdata->local->tx_strict_mode) {
+		printk(KERN_INFO"strict mode in tx: info->control.rates[0].idx == %d", info->control.rates[0].idx);
+		printk(KERN_INFO"strict mode in tx: info->control.rates[0].flags == %x", info->control.rates[0].flags);
+		printk(KERN_INFO"strict mode in tx: info->control.rates[0].count == %u", info->control.rates[0].count);
+	}
 
 	return TX_CONTINUE;
 }
@@ -5780,4 +5800,11 @@ int ieee80211_probe_mesh_link(struct wiphy *wiphy, struct net_device *dev,
 	local_bh_enable();
 
 	return 0;
+}
+
+void strict_mode_add_debugfs(struct ieee80211_local *local) {
+	local->tx_strict_mode = false;
+
+	debugfs_create_bool("strict_mode", S_IRUGO | S_IWUGO, local->hw.wiphy->debugfsdir,
+			   &local->tx_strict_mode);
 }

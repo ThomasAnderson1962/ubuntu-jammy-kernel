@@ -37,20 +37,22 @@
  * we have calibration data for all cards though to make
  * this static */
 static const struct ieee80211_channel ath9k_2ghz_chantable[] = {
-	CHAN2G(2412, 0), /* Channel 1 */
-	CHAN2G(2417, 1), /* Channel 2 */
-	CHAN2G(2422, 2), /* Channel 3 */
-	CHAN2G(2427, 3), /* Channel 4 */
-	CHAN2G(2432, 4), /* Channel 5 */
-	CHAN2G(2437, 5), /* Channel 6 */
-	CHAN2G(2442, 6), /* Channel 7 */
-	CHAN2G(2447, 7), /* Channel 8 */
-	CHAN2G(2452, 8), /* Channel 9 */
-	CHAN2G(2457, 9), /* Channel 10 */
-	CHAN2G(2462, 10), /* Channel 11 */
-	CHAN2G(2467, 11), /* Channel 12 */
-	CHAN2G(2472, 12), /* Channel 13 */
-	CHAN2G(2484, 13), /* Channel 14 */
+	CHAN2G(2372, 0), /* new channel */
+	CHAN2G(2412, 1), /* Channel 1 */
+	CHAN2G(2417, 2), /* Channel 2 */
+	CHAN2G(2422, 3), /* Channel 3 */
+	CHAN2G(2427, 4), /* Channel 4 */
+	CHAN2G(2432, 5), /* Channel 5 */
+	CHAN2G(2437, 6), /* Channel 6 */
+	CHAN2G(2442, 7), /* Channel 7 */
+	CHAN2G(2447, 8), /* Channel 8 */
+	CHAN2G(2452, 9), /* Channel 9 */
+	CHAN2G(2457, 10), /* Channel 10 */
+	CHAN2G(2462, 11), /* Channel 11 */
+	CHAN2G(2467, 12), /* Channel 12 */
+	CHAN2G(2472, 13), /* Channel 13 */
+	CHAN2G(2484, 14), /* Channel 14 */
+	CHAN2G(2496, 15), /* new channel */
 };
 
 /* Some 5 GHz radios are actually tunable on XXXX-YYYY
@@ -59,33 +61,35 @@ static const struct ieee80211_channel ath9k_2ghz_chantable[] = {
  * this static */
 static const struct ieee80211_channel ath9k_5ghz_chantable[] = {
 	/* _We_ call this UNII 1 */
-	CHAN5G(5180, 14), /* Channel 36 */
-	CHAN5G(5200, 15), /* Channel 40 */
-	CHAN5G(5220, 16), /* Channel 44 */
-	CHAN5G(5240, 17), /* Channel 48 */
+	CHAN5G(5180, 16), /* Channel 36 */
+	CHAN5G(5200, 17), /* Channel 40 */
+	CHAN5G(5220, 18), /* Channel 44 */
+	CHAN5G(5240, 19), /* Channel 48 */
 	/* _We_ call this UNII 2 */
-	CHAN5G(5260, 18), /* Channel 52 */
-	CHAN5G(5280, 19), /* Channel 56 */
-	CHAN5G(5300, 20), /* Channel 60 */
-	CHAN5G(5320, 21), /* Channel 64 */
+	CHAN5G(5260, 20), /* Channel 52 */
+	CHAN5G(5280, 21), /* Channel 56 */
+	CHAN5G(5300, 22), /* Channel 60 */
+	CHAN5G(5320, 23), /* Channel 64 */
 	/* _We_ call this "Middle band" */
-	CHAN5G(5500, 22), /* Channel 100 */
-	CHAN5G(5520, 23), /* Channel 104 */
-	CHAN5G(5540, 24), /* Channel 108 */
-	CHAN5G(5560, 25), /* Channel 112 */
-	CHAN5G(5580, 26), /* Channel 116 */
-	CHAN5G(5600, 27), /* Channel 120 */
-	CHAN5G(5620, 28), /* Channel 124 */
-	CHAN5G(5640, 29), /* Channel 128 */
-	CHAN5G(5660, 30), /* Channel 132 */
-	CHAN5G(5680, 31), /* Channel 136 */
-	CHAN5G(5700, 32), /* Channel 140 */
+	CHAN5G(5500, 24), /* Channel 100 */
+	CHAN5G(5520, 25), /* Channel 104 */
+	CHAN5G(5540, 26), /* Channel 108 */
+	CHAN5G(5560, 27), /* Channel 112 */
+	CHAN5G(5580, 28), /* Channel 116 */
+	CHAN5G(5600, 29), /* Channel 120 */
+	CHAN5G(5620, 30), /* Channel 124 */
+	CHAN5G(5640, 31), /* Channel 128 */
+	CHAN5G(5660, 32), /* Channel 132 */
+	CHAN5G(5680, 33), /* Channel 136 */
+	CHAN5G(5700, 34), /* Channel 140 */
+	CHAN5G(5730, 35), /* new channel */
 	/* _We_ call this UNII 3 */
-	CHAN5G(5745, 33), /* Channel 149 */
-	CHAN5G(5765, 34), /* Channel 153 */
-	CHAN5G(5785, 35), /* Channel 157 */
-	CHAN5G(5805, 36), /* Channel 161 */
-	CHAN5G(5825, 37), /* Channel 165 */
+	CHAN5G(5745, 36), /* Channel 149 */
+	CHAN5G(5765, 37), /* Channel 153 */
+	CHAN5G(5785, 38), /* Channel 157 */
+	CHAN5G(5805, 39), /* Channel 161 */
+	CHAN5G(5825, 40), /* Channel 165 */
+	CHAN5G(5845, 41), /* new channel */
 };
 
 /* Atheros hardware rate code addition for short preamble */

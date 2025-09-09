@@ -419,6 +419,52 @@ static bool rate_control_send_low(struct ieee80211_sta *pubsta,
 	return false;
 }
 
+/*
+Pick the slowest data rate that's supported by both the station
+and the NIC; more or less equivalent to calling `__rate_control_send_low`
+*/
+void rate_control_get_slow_rate(struct ieee80211_sub_if_data *sdata,
+			   struct sta_info *sta,
+			   struct ieee80211_tx_rate_control *txrc) {
+	struct ieee80211_tx_info *info = IEEE80211_SKB_CB(txrc->skb);
+	struct ieee80211_supported_band *sband = txrc->sband;
+	int i;
+	u32 bitrate;
+
+	for (i = 0; i < IEEE80211_TX_MAX_RATES; ++i) {
+		info->control.rates[i].idx = -1;
+		info->control.rates[i].flags = 0;
+		info->control.rates[i].count = 0;
+	}
+
+	// TODO log sband
+	printk(KERN_INFO"strict mode: ieee80211_chandef_rate_flags(&hw->conf.chandef) = 0x%x",
+		ieee80211_chandef_rate_flags(&txrc->hw->conf.chandef));
+	printk(KERN_INFO"strict mode: sband->band = %d", sband->band);
+	printk(KERN_INFO"strict mode: sband->n_bitrates = %d", sband->n_bitrates);
+	for (i = 0; i < sband->n_bitrates; ++i) {
+		bitrate = sband->bitrates[i].bitrate * 100;
+		printk(KERN_INFO"strict mode: sband->bitrates[%d].bitrate = %u Kbps", i, bitrate);
+		printk(KERN_INFO"strict mode: sband->bitrates[%d].flags = %u", i, sband->bitrates[i].flags);
+	}
+
+	if (sta) {
+		printk(KERN_INFO"strict mode: sta->sta->supp_rates[NL80211_BAND_2GHZ] = 0x%x", sta->sta.supp_rates[NL80211_BAND_2GHZ]);
+		printk(KERN_INFO"strict mode: sta->sta->supp_rates[NL80211_BAND_5GHZ] = 0x%x", sta->sta.supp_rates[NL80211_BAND_5GHZ]);
+	} else {
+		printk(KERN_INFO"strict mode: sta == NULL");
+	}
+
+	__rate_control_send_low(txrc->hw, sband, sta ? &sta->sta : NULL, info,
+							0xffffffff);
+
+	printk(KERN_INFO"strict mode: info->control.rates[0].idx == %d", info->control.rates[0].idx);
+	printk(KERN_INFO"strict mode: info->control.rates[0].flags == %x", info->control.rates[0].flags);
+	printk(KERN_INFO"strict mode: info->control.rates[0].count == %u", info->control.rates[0].count);
+}
+
+EXPORT_SYMBOL(rate_control_get_slow_rate);
+
 static bool rate_idx_match_legacy_mask(s8 *rate_idx, int n_bitrates, u32 mask)
 {
 	int j;

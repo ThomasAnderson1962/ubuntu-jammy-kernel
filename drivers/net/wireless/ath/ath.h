@@ -151,6 +151,9 @@ struct ath_common {
 	int debug_mask;
 	enum ath_device_state state;
 	unsigned long op_flags;
+	u32 chan_bw;
+	// use value to override channel frequency unless it's 0
+	u32 freq_override;
 
 	struct ath_ani ani;
 

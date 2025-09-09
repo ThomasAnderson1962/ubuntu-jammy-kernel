@@ -1289,6 +1289,9 @@ struct ieee80211_local {
 	/* wowlan is enabled -- don't reconfig on resume */
 	bool wowlan;
 
+	/* TX using lowest data rate w/o RTS */
+	bool tx_strict_mode;
+
 	struct work_struct radar_detected_work;
 
 	/* number of RX chains the hardware has */
@@ -2525,5 +2528,7 @@ u32 ieee80211_calc_expected_tx_airtime(struct ieee80211_hw *hw,
 
 void ieee80211_init_frag_cache(struct ieee80211_fragment_cache *cache);
 void ieee80211_destroy_frag_cache(struct ieee80211_fragment_cache *cache);
+
+void strict_mode_add_debugfs(struct ieee80211_local *local);
 
 #endif /* IEEE80211_I_H */

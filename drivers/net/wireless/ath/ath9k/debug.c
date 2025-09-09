@@ -1364,6 +1364,93 @@ void ath9k_deinit_debug(struct ath_softc *sc)
 	ath9k_cmn_spectral_deinit_debug(&sc->spec_priv);
 }
 
+
+static ssize_t read_file_chan_bw(struct file *file, char __user *user_buf,
+			     size_t count, loff_t *ppos)
+{
+	struct ath_softc *sc = file->private_data;
+	struct ath_common *common = ath9k_hw_common(sc->sc_ah);
+	char buf[32];
+	unsigned int len;
+
+	len = sprintf(buf, "0x%08x\n", common->chan_bw);
+	return simple_read_from_buffer(user_buf, count, ppos, buf, len);
+}
+
+static ssize_t write_file_chan_bw(struct file *file, const char __user *user_buf,
+			     size_t count, loff_t *ppos)
+{
+	struct ath_softc *sc = file->private_data;
+	struct ath_common *common = ath9k_hw_common(sc->sc_ah);
+	unsigned long chan_bw;
+	char buf[32];
+	ssize_t len;
+
+	len = min(count, sizeof(buf) - 1);
+	if (copy_from_user(buf, user_buf, len))
+		return -EFAULT;
+
+	buf[len] = '\0';
+	if (kstrtoul(buf, 0, &chan_bw))
+		return -EINVAL;
+
+	common->chan_bw = chan_bw;
+	if (!test_bit(ATH_OP_INVALID, &common->op_flags))
+		ath9k_ops.config(sc->hw, IEEE80211_CONF_CHANGE_CHANNEL);
+
+	return count;
+}
+
+static const struct file_operations fops_chanbw = {
+	.read = read_file_chan_bw,
+	.write = write_file_chan_bw,
+	.open = simple_open,
+	.owner = THIS_MODULE,
+	.llseek = default_llseek,
+};
+
+static ssize_t read_file_freq_override(struct file *file, char __user *user_buf,
+			     size_t count, loff_t *ppos)
+{
+	struct ath_softc *sc = file->private_data;
+	struct ath_common *common = ath9k_hw_common(sc->sc_ah);
+	char buf[32];
+	unsigned int len;
+
+	len = sprintf(buf, "%u\n", common->freq_override);
+	return simple_read_from_buffer(user_buf, count, ppos, buf, len);
+}
+
+static ssize_t write_file_freq_override(struct file *file, const char __user *user_buf,
+			     size_t count, loff_t *ppos)
+{
+	struct ath_softc *sc = file->private_data;
+	struct ath_common *common = ath9k_hw_common(sc->sc_ah);
+	unsigned long freq_override;
+	char buf[32];
+	ssize_t len;
+
+	len = min(count, sizeof(buf) - 1);
+	if (copy_from_user(buf, user_buf, len))
+		return -EFAULT;
+
+	buf[len] = '\0';
+	if (kstrtoul(buf, 0, &freq_override))
+		return -EINVAL;
+
+	common->freq_override = freq_override;
+
+	return count;
+}
+
+static const struct file_operations fops_freq_override = {
+	.read = read_file_freq_override,
+	.write = write_file_freq_override,
+	.open = simple_open,
+	.owner = THIS_MODULE,
+	.llseek = default_llseek,
+};
+
 int ath9k_init_debug(struct ath_hw *ah)
 {
 	struct ath_common *common = ath9k_hw_common(ah);
@@ -1403,6 +1490,8 @@ int ath9k_init_debug(struct ath_hw *ah)
 			  &ah->txchainmask);
 	debugfs_create_file("ani", 0600,
 			    sc->debug.debugfs_phy, sc, &fops_ani);
+	debugfs_create_file("chanbw", S_IRUSR | S_IWUSR, sc->debug.debugfs_phy, sc, &fops_chanbw);
+	debugfs_create_file("freq_override", S_IRUSR | S_IWUSR, sc->debug.debugfs_phy, sc, &fops_freq_override);
 	debugfs_create_bool("paprd", 0600, sc->debug.debugfs_phy,
 			    &sc->sc_ah->config.enable_paprd);
 	debugfs_create_file("regidx", 0600, sc->debug.debugfs_phy,

@@ -61,6 +61,18 @@ static int __ath_regd_init(struct ath_regulatory *reg);
 #define ATH_5GHZ_NO_MIDBAND	ATH_5GHZ_5150_5350, \
 				ATH_5GHZ_5725_5850
 
+#define ATH_2GHZ_CUSTOM	REG_RULE(2372-10, 2496+10, 40, 0, 20, 0)
+#define ATH_5GHZ_CUSTOM REG_RULE(5150-10, 5855+10, 80, 0, 30, 0)
+
+static const struct ieee80211_regdomain ath_world_regdom_custom = {
+	.n_reg_rules = 2,
+	.alpha2 =  "99",
+	.reg_rules = {
+		ATH_2GHZ_CUSTOM,
+		ATH_5GHZ_CUSTOM,
+	}
+};
+
 /* Can be used for:
  * 0x60, 0x61, 0x62 */
 static const struct ieee80211_regdomain ath_world_regdom_60_61_62 = {
@@ -222,28 +234,7 @@ static const struct ieee80211_regdomain *ath_default_world_regdomain(void)
 static const struct
 ieee80211_regdomain *ath_world_regdomain(struct ath_regulatory *reg)
 {
-	switch (reg->regpair->reg_domain) {
-	case 0x60:
-	case 0x61:
-	case 0x62:
-		return &ath_world_regdom_60_61_62;
-	case 0x63:
-	case 0x65:
-		return &ath_world_regdom_63_65;
-	case 0x64:
-		return &ath_world_regdom_64;
-	case 0x66:
-	case 0x69:
-		return &ath_world_regdom_66_69;
-	case 0x67:
-	case 0x68:
-	case 0x6A:
-	case 0x6C:
-		return &ath_world_regdom_67_68_6A_6C;
-	default:
-		WARN_ON(1);
-		return ath_default_world_regdomain();
-	}
+	return &ath_world_regdom_custom;
 }
 
 bool ath_is_49ghz_allowed(u16 regdomain)
@@ -511,9 +502,6 @@ void ath_reg_notifier_apply(struct wiphy *wiphy,
 {
 	struct ath_common *common = container_of(reg, struct ath_common,
 						 regulatory);
-	/* We always apply this */
-	ath_reg_apply_radar_flags(wiphy, reg);
-
 	/*
 	 * This would happen when we have sent a custom regulatory request
 	 * a world regulatory domain and the scheduler hasn't yet processed
@@ -660,7 +648,6 @@ ath_regd_init_wiphy(struct ath_regulatory *reg,
 	}
 
 	wiphy_apply_custom_regulatory(wiphy, regd);
-	ath_reg_apply_radar_flags(wiphy, reg);
 	ath_reg_apply_world_flags(wiphy, NL80211_REGDOM_SET_BY_DRIVER, reg);
 	return 0;
 }

@@ -1440,7 +1440,7 @@ nl80211_parse_connkeys(struct cfg80211_registered_device *rdev,
 
 		/* must be WEP key if we got here */
 		if (no_ht)
-			*no_ht = true;
+			*no_ht = false;
 	}
 
 	if (result->def < 0) {
